@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\StatusChangeJob;
+use App\Models\Application;
 use App\Models\Auditor;
+use App\Models\EmailTemplate;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -111,33 +113,6 @@ class SettingsController extends Controller
         return Redirect::to('/admin/settings');
     }
 
-function updateReportSettings(Request $request)
-{
-
-        $request->validate([
-
-            'report_glo' => 'required',
-            'report_contact' => 'required'
-        ]);
-
-        $result = Setting::where("id", 1)->update([
-            'report_glo' => $request->input('report_glo'),
-            'report_contact' => $request->input('report_contact')
-
-        ]);
-
-
-        if($result) {
-            session()->flash('message', 'updated');
-            return redirect('admin/settings');
-        } else {
-            session()->flash('message', 'failed');
-              return Redirect::to('admin/settings');
-        }
-
-}
-
-
     function updateSettings(Request $request) {
         $validate = $request->validate([
            'title' => 'required'
@@ -169,9 +144,7 @@ function updateReportSettings(Request $request)
         Setting::where('id', 1)->update([
             'title' => $request->input('title'),
             'logo' => $logo,
-            'favicon' => $favicon,
-            // 'report_glo' => $request->input('report_glo'),
-            // 'report_contact' => $request->input('report_contact')
+            'favicon' => $favicon
         ]);
 
         session()->flash('message', 'updated');
@@ -217,6 +190,7 @@ function updateReportSettings(Request $request)
 //            $message->from($from_email, $from_name);
 //        });
 //        echo json_encode("success");
+
         dispatch(new StatusChangeJob(Auth::user()->id, 'prt83102@gmail.com', 10));
     }
 }

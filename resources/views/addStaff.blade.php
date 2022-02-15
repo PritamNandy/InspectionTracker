@@ -56,6 +56,13 @@
                                         </div>
                                     </div>
 
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="company_name"><span class="red">*</span> Password</label>
+                                                <input type="text" name="password" class="form-control" id="password" required>
+                                            </div>
+                                        </div>
+
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="company_name"><span class="red">*</span> Status</label>

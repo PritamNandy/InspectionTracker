@@ -48,5 +48,4 @@ class Status50 extends Model
         'thumb_1',
         'notify_glo',
     ];
-
 }

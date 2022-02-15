@@ -52,6 +52,9 @@ class CreateApplicationMail extends Mailable
         $template = str_replace('region', $application->region, $template);
         $template = str_replace('created_time', $application->created_at, $template);
 
+        $template = str_replace('hriq_id', $application->hriq_id, $template);
+        $template = str_replace('application_id', '<a href="'.url('view-application')."/".$application->id.'">'.url('view-application')."/".$application->id.'</a>', $template);
+
         return $this->subject($templateDetails->subject)
             ->view('mail.CreateApplication', [
                 'template' => $template

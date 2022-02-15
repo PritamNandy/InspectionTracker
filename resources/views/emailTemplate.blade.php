@@ -87,27 +87,27 @@
             let id = $('#type').val();
             if(id == 1) {
                 $('.suggestions').empty();
-                $('.suggestions').append('applicant_name, applicant_address, applicant_city, applicant_county,' +
+                $('.suggestions').append('hriq_id, application_id, applicant_name, applicant_address, applicant_city, applicant_county,' +
                     ' requester_name, requester_email, requester_phone, company,' +
                     ' supervisor_name, supervisor_email, supervisor_phone' +
                     ' construction_type, floor_plan, region' +
                     ' created_time');
             } else if(id == 2) {
                 $('.suggestions').empty();
-                $('.suggestions').append('applicant_name, applicant_address, applicant_city, applicant_county,' +
+                $('.suggestions').append('hriq_id, application_id, applicant_name, applicant_address, applicant_city, applicant_county,' +
                     ' requester_name, requester_email, requester_phone, company,' +
                     ' supervisor_name, supervisor_email, supervisor_phone' +
                     ' construction_type, floor_plan, region, updated_by, update_time');
             } else if(id == 3) {
                 $('.suggestions').empty();
-                $('.suggestions').append('applicant_name, applicant_address, applicant_city, applicant_county,' +
+                $('.suggestions').append('hriq_id, application_id, applicant_name, applicant_address, applicant_city, applicant_county,' +
                     ' requester_name, requester_email, requester_phone, company,' +
                     ' supervisor_name, supervisor_email, supervisor_phone' +
                     ' construction_type, floor_plan, region, updated_by, update_time' +
                     ' inspector_name, inspector_email, inspector_phone, inspection_status');
             } else if(id == 4) {
                 $('.suggestions').empty();
-                $('.suggestions').append('applicant_name, applicant_address, applicant_city, applicant_county,' +
+                $('.suggestions').append('hriq_id, application_id, applicant_name, applicant_address, applicant_city, applicant_county,' +
                     ' requester_name, requester_email, requester_phone, company,' +
                     ' supervisor_name, supervisor_email, supervisor_phone' +
                     ' construction_type, floor_plan, region, updated_by, update_time' +
@@ -119,27 +119,27 @@
             let id = $('#type').val();
             if(id == 1) {
                 $('.suggestions').empty();
-                $('.suggestions').append('applicant_name, applicant_address, applicant_city, applicant_county,' +
+                $('.suggestions').append('hriq_id, application_id, applicant_name, applicant_address, applicant_city, applicant_county,' +
                     ' requester_name, requester_email, requester_phone, company,' +
                     ' supervisor_name, supervisor_email, supervisor_phone' +
                     ' construction_type, floor_plan, region' +
                     ' created_time');
             } else if(id == 2) {
                 $('.suggestions').empty();
-                $('.suggestions').append('applicant_name, applicant_address, applicant_city, applicant_county,' +
+                $('.suggestions').append('hriq_id, application_id, applicant_name, applicant_address, applicant_city, applicant_county,' +
                     ' requester_name, requester_email, requester_phone, company,' +
                     ' supervisor_name, supervisor_email, supervisor_phone' +
                     ' construction_type, floor_plan, region, updated_by, update_time');
             } else if(id == 3) {
                 $('.suggestions').empty();
-                $('.suggestions').append('applicant_name, applicant_address, applicant_city, applicant_county,' +
+                $('.suggestions').append('hriq_id, application_id, applicant_name, applicant_address, applicant_city, applicant_county,' +
                     ' requester_name, requester_email, requester_phone, company,' +
                     ' supervisor_name, supervisor_email, supervisor_phone' +
                     ' construction_type, floor_plan, region, updated_by, update_time' +
                     ' inspector_name, inspector_email, inspector_phone, inspection_status');
             } else if(id == 4) {
                 $('.suggestions').empty();
-                $('.suggestions').append('applicant_name, applicant_address, applicant_city, applicant_county,' +
+                $('.suggestions').append('hriq_id, application_id, applicant_name, applicant_address, applicant_city, applicant_county,' +
                     ' requester_name, requester_email, requester_phone, company,' +
                     ' supervisor_name, supervisor_email, supervisor_phone' +
                     ' construction_type, floor_plan, region, updated_by, update_time' +

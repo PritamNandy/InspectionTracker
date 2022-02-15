@@ -104,12 +104,13 @@ class StaffController extends Controller
             'name' => 'required',
             'email' => 'required|unique:users',
             'role' => 'required',
-            'status' => 'required'
+            'status' => 'required',
+            'password' => 'required'
         ]);
 
         $result = User::create([
             'name' => $request->input('name'),
-            'password' => bcrypt('12345678'),
+            'password' => bcrypt($request->input('password')),
             'email' => $request->input('email'),
             'role_id' => $request->input('role'),
             'status' => $request->input('status'),
@@ -141,10 +142,16 @@ class StaffController extends Controller
             'status' => 'required'
         ]);
 
+        $password = User::find($request->input('id'))->password;
+        if($request->input('password')) {
+            $password = bcrypt($request->input('password'));
+        }
+
         $result = User::where("id", $request->input('id'))->update([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'role_id' => $request->input('role'),
+            'password' => $password,
             'status' => $request->input('status')
         ]);
 

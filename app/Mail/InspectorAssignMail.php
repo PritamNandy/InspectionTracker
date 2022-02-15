@@ -58,6 +58,9 @@ class InspectorAssignMail extends Mailable
         $template = str_replace('updated_by', User::find($this->updatedBy)->name, $template);
         $template = str_replace('update_time', $application->updated_at, $template);
 
+        $template = str_replace('hriq_id', $application->hriq_id, $template);
+        $template = str_replace('application_id', '<a href="'.url('view-application')."/".$application->id.'">'.url('view-application')."/".$application->id.'</a>', $template);
+
         if($application->inpector_id != null || $application->inspector_id != "") {
             $template = str_replace('inspector_name', User::find($application->inspector_id)->name, $template);
             $template = str_replace('inspector_email', User::find($application->inspector_id)->email, $template);

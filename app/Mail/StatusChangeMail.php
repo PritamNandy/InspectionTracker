@@ -33,7 +33,7 @@ class StatusChangeMail extends Mailable
      */
     public function build()
     {
-        $templateDetails = EmailTemplate::find(4);
+        $templateDetails = EmailTemplate::find(3);
         $application = Application::find($this->id);
         $template = $templateDetails->template;
         $template = str_replace('applicant_name', $application->applicant_name, $template);
@@ -59,6 +59,9 @@ class StatusChangeMail extends Mailable
         $template = str_replace('update_time', $application->updated_at, $template);
 
         $template = str_replace('inspection_status', $application->inspection_status, $template);
+
+        $template = str_replace('hriq_id', $application->hriq_id, $template);
+        $template = str_replace('application_id', '<a href="'.url('view-application')."/".$application->id.'">'.url('view-application')."/".$application->id.'</a>', $template);
 
         if($application->inpector_id != null || $application->inspector_id != "") {
             $template = str_replace('inspector_name', User::find($application->inspector_id)->name, $template);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use PhpParser\Comment\Doc;
 use Yajra\DataTables\DataTables;
 
 class DocumentController extends Controller
@@ -70,10 +71,10 @@ class DocumentController extends Controller
     function createDocument(Request $request) {
         $request->validate([
             'name' => 'required',
-            'file' => 'required'
+            'file' => 'required|mimes:jpeg,png'
         ]);
 
-        $fileName =  $request->file->store('public/uploads/');
+        $fileName =  $request->file->storeAs('public/uploads', $request->file->getClientOriginalName());
         $file = str_replace('public/uploads/', '', $fileName);
 
         $result = Document::create([
@@ -98,7 +99,7 @@ class DocumentController extends Controller
         $document = Document::find($request->input('id'));
         if($request->hasFile('file')) {
             unlink($document->file);
-            $fileName =  $request->file->store('public/uploads/');
+            $fileName =  $request->file->storeAs('public/uploads', $request->file->getClientOriginalName());
             $file = str_replace('public/uploads/', '', $fileName);
         } else {
             $file = $document->file;
@@ -119,6 +120,15 @@ class DocumentController extends Controller
     }
 
     function deleteDocument($id) {
-
+        $document = Document::find($id);
+        unlink($document->file);
+        $result = Document::where("id", $id)->delete();
+        if($result) {
+            session()->flash('message', 'success');
+            return redirect('admin/document');
+        } else {
+            session()->flash('message', 'failed');
+            return redirect('admin/document');
+        }
     }
 }

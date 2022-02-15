@@ -68,6 +68,8 @@ class UpdateApplicationMail extends Mailable
             $template = str_replace('inspector_phone', "Not Assigned Yet", $template);
         }
 
+        $template = str_replace('hriq_id', $application->hriq_id, $template);
+        $template = str_replace('application_id', '<a href="'.url('view-application')."/".$application->id.'">'.url('view-application')."/".$application->id.'</a>', $template);
 
         return $this->subject($templateDetails->subject)
             ->view('mail.UpdateApplication', [

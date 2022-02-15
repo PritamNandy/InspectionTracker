@@ -12,8 +12,6 @@ class Setting extends Model
     protected $fillable = [
         'title',
         'logo',
-        'favicon',
-        'report_glo',
-        'report_contact'
+        'favicon'
     ];
 }

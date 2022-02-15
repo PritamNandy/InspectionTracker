@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Models\Company;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -24,15 +26,45 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $inspectors = User::where('role_id', 3)->get();
+        $contructors = Company::all();
+        return view('home', [
+            'inspectors' => $inspectors,
+            'contructors' => $contructors
+        ]);
     }
 
     function contractorData($id) {
+        $data = array();
+        $data['scheduled_inspector'] = array();
+        $data['submitted_inspector'] = array();
+        $data['cancelled_inspector'] = array();
         if($id == 'all') {
             $data['total'] = count(Application::all());
             $data['scheduled'] = count(Application::where('inspection_status', 'Scheduled')->get());
             $data['cancelled'] = count(Application::where('inspection_status', 'Cancelled')->get());
             $data['submitted'] = count(Application::where('inspection_status', 'Submitted')->get());
+
+            $data['inspectors'] = User::where('role_id', 3)->get();
+            $count = 0;
+            foreach ($data['inspectors'] as $inspector) {
+                $data['scheduled_inspector'][$count] = count(Application::where([
+                    ['inspector_id', $inspector->id],
+                    ['inspection_status', 'Scheduled']
+                ])->get());
+
+                $data['submitted_inspector'][$count] = count(Application::where([
+                    ['inspector_id', $inspector->id],
+                    ['inspection_status', 'Submitted']
+                ])->get());
+
+                $data['cancelled_inspector'][$count] = count(Application::where([
+                    ['inspector_id', $inspector->id],
+                    ['inspection_status', 'Cancelled']
+                ])->get());
+
+                $count++;
+            }
         } else {
             $data['total'] = count(Application::where('company_id', $id)->get());
             $data['scheduled'] = count(Application::where([
@@ -47,6 +79,30 @@ class HomeController extends Controller
                 ['company_id', $id],
                 ['inspection_status', 'Submitted']
             ])->get());
+
+            $data['inspectors'] = User::where('role_id', 3)->get();
+            $count = 0;
+            foreach ($data['inspectors'] as $inspector) {
+                $data['scheduled_inspector'][$count] = count(Application::where([
+                    ['company_id', $id],
+                    ['inspector_id', $inspector->id],
+                    ['inspection_status', 'Scheduled']
+                ])->get());
+
+                $data['submitted_inspector'][$count] = count(Application::where([
+                    ['company_id', $id],
+                    ['inspector_id', $inspector->id],
+                    ['inspection_status', 'Submitted']
+                ])->get());
+
+                $data['cancelled_inspector'][$count] = count(Application::where([
+                    ['company_id', $id],
+                    ['inspector_id', $inspector->id],
+                    ['inspection_status', 'Cancelled']
+                ])->get());
+
+                $count++;
+            }
         }
 
         echo json_encode($data);

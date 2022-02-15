@@ -50,9 +50,16 @@
                                         <div class="form-group">
                                             <label for="company_name"><span class="red">*</span> Role</label>
                                             <select name="role" id="role" class="form-control chosen-select">
-                                                <option value="3">Inspector</option>
-                                                <option value="2">Admin</option>
+                                                <option value="3"@if($user->role_id == 3) selected @endif>Inspector</option>
+                                                <option value="2"@if($user->role_id == 2) selected @endif>Admin</option>
                                             </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="company_name"> Password</label>
+                                            <input type="text" name="password" class="form-control" id="password">
                                         </div>
                                     </div>
 
@@ -66,10 +73,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                <input type="hidden" name="id" id="id" value="{{ $user->id }}">
                             </form>
                         </div>
                         <input type="hidden" id="valid_email" value="1">
-                        <input type="hidden" name="id" id="id" value="{{ $user->id }}">
                         <div class="card-footer">
                             <button id="submit-form" class="btn btn-success mr-10">Save</button>
                         </div>

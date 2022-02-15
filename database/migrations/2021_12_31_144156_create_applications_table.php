@@ -27,6 +27,10 @@ class CreateApplicationsTable extends Migration
             $table->string('document_file_5')->nullable();
             $table->string('document_6')->nullable();
             $table->string('document_file_6')->nullable();
+            $table->string('document_7')->nullable();
+            $table->string('document_file_7')->nullable();
+            $table->string('document_8')->nullable();
+            $table->string('document_file_8')->nullable();
             $table->string('hriq_id')->nullable();
             $table->string('submitted_glo')->nullable();
             $table->string('date_glo_submission')->nullable();

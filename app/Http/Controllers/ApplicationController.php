@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use iio\libmergepdf\Merger;
-use LynX39\LaraPdfMerger\Facades\PdfMerger;
-
 use App\Jobs\CreateApplicationJob;
 use App\Jobs\InspectorAssignJob;
 use App\Jobs\StatusChangeJob;
@@ -16,642 +13,19 @@ use App\Models\Deficiency;
 use App\Models\Document;
 use App\Models\FloorPlan;
 use App\Models\Photo;
-use App\Models\Dpdf;
 use App\Models\Role;
-use App\Models\Setting;
 use App\Models\Status100;
 use App\Models\Status50;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\DataTables;
-use Barryvdh\DomPDF\Facade\PDF;
-use Illuminate\Support\Facades\DB;
 
 class ApplicationController extends Controller
 {
-
-public function generatepdfs($id)
-{
-
-    $application = Application::find($id);
-    $flr_id = $application->floor_plan;
-    $floorplan = FloorPlan::find($flr_id);
-
-     $company_id = $application->company_id;
-     $buider_name  = Company::find($company_id);
-
-
-
-    foreach (Setting::where('id', 1)->get() as $report)
-    {
-        $report_glo = $report->report_glo;
-        $report_contact = $report->report_contact;
-    }
-
-    $gis = Status100::where('application_id', $id)
-    ->get('general_inspection');
-    $result = explode("_", $gis);
-
-    $eis = Status100::where('application_id', $id)
-    ->get('exterior_inspection');
-    $ex_ins = explode("_", $eis);
-
-    $iis = Status100::where('application_id', $id)
-    ->get('interior_inspection');
-    $in_ins = explode("_", $iis);
-
-    $el_is = Status100::where('application_id', $id)
-    ->get('electrical_inspection');
-    $el_ins = explode("_", $el_is);
-
-    $ac_is = Status100::where('application_id', $id)
-    ->get('accessibility_inspection');
-    $ac_ins = explode("_", $ac_is);
-
-    foreach (Status100::where('application_id', $id)
-    ->get() as $status50) {
-        $in_name = $status50->inspector;
-        $superintendent = $status50->superintendent;
-        $in_sign = $status50->inspection_sign;
-        $sup_sign =  $status50->superintendent_sign;
-        $in_signdate = $status50->inspection_sign_off_date;
-        $sup_signdate =  $status50->superintendent_sign_off_date;
-
-    }
-    foreach (Photo::where('application_id', $id)->where('type', '100%')
-        ->get() as $photo50) {
-            $photo_1=$photo50->photo_1;
-            $photo_2=$photo50->photo_2;
-            $photo_3=$photo50->photo_3;
-            $photo_4=$photo50->photo_4;
-            $photo_5=$photo50->photo_5;
-            $photo_6=$photo50->photo_6;
-            $photo_7=$photo50->photo_7;
-            $photo_8=$photo50->photo_8;
-            $photo_9=$photo50->photo_9;
-            $photo_10=$photo50->photo_10;
-            $photo_11=$photo50->photo_11;
-            $photo_12=$photo50->photo_12;
-            $photo_13=$photo50->photo_13;
-            $photo_14=$photo50->photo_14;
-            $photo_15=$photo50->photo_15;
-            $photo_16=$photo50->photo_16;
-            $photo_17=$photo50->photo_17;
-            $photo_18=$photo50->photo_18;
-            $photo_19=$photo50->photo_19;
-            $photo_20=$photo50->photo_20;
-            $photo_21=$photo50->photo_21;
-            $photo_22=$photo50->photo_22;
-            $photo_23=$photo50->photo_23;
-            $photo_24=$photo50->photo_24;
-            $photo_25=$photo50->photo_25;
-            $photo_26=$photo50->photo_26;
-            $photo_27=$photo50->photo_27;
-            $photo_28=$photo50->photo_28;
-            $photo_29=$photo50->photo_29;
-            $photo_30=$photo50->photo_30;
-
-
-        }
-      //  dd($photo_20);
-      foreach (Deficiency::where('application_id', $id)->where('type', '100%')
-      ->get() as $deficiency) {
-        $deficiency_photo_1 = $deficiency->deficiency_photo_1;
-        $deficiency_photo_2 = $deficiency->deficiency_photo_2;
-        $deficiency_photo_3 = $deficiency->deficiency_photo_3;
-        $deficiency_photo_4 = $deficiency->deficiency_photo_4;
-        $deficiency_photo_5 = $deficiency->deficiency_photo_5;
-        $deficiency_photo_6 = $deficiency->deficiency_photo_6;
-        $deficiency_photo_7 = $deficiency->deficiency_photo_7;
-        $deficiency_photo_8 = $deficiency->deficiency_photo_8;
-        $deficiency_photo_9 = $deficiency->deficiency_photo_9;
-        $deficiency_photo_10= $deficiency->deficiency_photo_10;
-        $deficiency_photo_11 =$deficiency->deficiency_photo_11;
-        $deficiency_photo_12 =$deficiency->deficiency_photo_12;
-        $deficiency_photo_13=$deficiency->deficiency_photo_13;
-
-      }
-
-
-
-
-
-
-
-
-
-
-    $data = [
-        'applicant_name' => $application->applicant_name ,
-        'applicant_address' => $application->applicant_address,
-        'contractor_name' =>$buider_name->name,
-        'floorplan' => $floorplan->name,
-        'report_glo' => $report_glo,
-        'report_contact' => $report_contact,
-        //General inspection
-            'result_1'=>str_replace('inspection":"', '' , $result[1]),
-            'result_2'=>$result[2],
-            'result_3'=>$result[3],
-            'result_4'=>$result[4],
-            'result_5'=>$result[5],
-            'result_6'=>$result[6],
-            'result_7'=>$result[7],
-            'result_8'=>$result[8],
-            'result_9'=>$result[9],
-            'result_10'=>$result[10],
-            'result_11'=>$result[11],
-            'result_12'=>$result[12],
-            'result_13'=>$result[13],
-            'result_14'=>$result[14],
-            'result_15'=>$result[15],
-            'result_16'=>$result[16],
-            'result_17'=>$result[17],
-            'result_18'=>$result[18],
-            'result_19'=>$result[19],
-            'result_20'=>$result[20],
-            'result_21'=>$result[21],
-            'result_22'=>$result[22],
-            'result_23'=>$result[23],
-            'result_24'=>  str_replace('"}]', '' , $result[24]),
-            //ExteriorIns code-----------------------------
-            'ex_ins_1' =>str_replace('inspection":"', '' , $ex_ins[1]),
-            'ex_ins_2' =>$ex_ins[2],
-            'ex_ins_3' =>$ex_ins[3],
-            'ex_ins_4' =>$ex_ins[4],
-            'ex_ins_5' =>$ex_ins[5],
-            'ex_ins_6' =>$ex_ins[6],
-            'ex_ins_7' =>$ex_ins[7],
-            'ex_ins_8' =>$ex_ins[8],
-            'ex_ins_9' =>$ex_ins[9],
-            'ex_ins_10' =>$ex_ins[10],
-            'ex_ins_11' =>$ex_ins[11],
-            'ex_ins_12' =>$ex_ins[12],
-            'ex_ins_13' =>$ex_ins[13],
-            'ex_ins_14' =>$ex_ins[14],
-            'ex_ins_15' =>$ex_ins[15],
-            'ex_ins_16' =>$ex_ins[16],
-            'ex_ins_17' =>  str_replace('"}]', '' , $ex_ins[17]),
-            //I code-----------------------------
-            'in_ins_1' =>str_replace('inspection":"', '' , $in_ins[1]),
-            'in_ins_2' => $in_ins[2],
-            'in_ins_3' =>$in_ins[3],
-            'in_ins_4'=>$in_ins[4],
-'in_ins_5'=>$in_ins[5],
-'in_ins_6'=>$in_ins[6],
-'in_ins_7'=>$in_ins[7],
-'in_ins_8'=>$in_ins[8],
-'in_ins_9'=>$in_ins[9],
-'in_ins_10'=>$in_ins[10],
-'in_ins_11'=>$in_ins[11],
-'in_ins_12'=>$in_ins[12],
-'in_ins_13'=>$in_ins[13],
-'in_ins_14'=>$in_ins[14],
-'in_ins_15'=>$in_ins[15],
-'in_ins_16'=>$in_ins[16],
-'in_ins_17'=>$in_ins[17],
-'in_ins_18'=>$in_ins[18],
-'in_ins_19'=>$in_ins[19],
-'in_ins_20'=>$in_ins[20],
-'in_ins_21'=>$in_ins[21],
-'in_ins_22'=>$in_ins[22],
-'in_ins_23'=>$in_ins[23],
-'in_ins_24'=>$in_ins[24],
-'in_ins_25'=>$in_ins[25],
-'in_ins_26'=>$in_ins[26],
-'in_ins_27'=>$in_ins[27],
-'in_ins_28'=>$in_ins[28],
-'in_ins_29'=>$in_ins[29],
-'in_ins_30'=>$in_ins[30],
-'in_ins_31'=>$in_ins[31],
-'in_ins_32'=>$in_ins[32],
-'in_ins_33'=>$in_ins[33],
-'in_ins_34'=>$in_ins[34],
-'in_ins_35' => str_replace('"}]', '' ,$in_ins[35]),
-//Electrical code------------------------------
-'el_ins_1'=>str_replace('inspection":"', '' ,$el_ins[1]),
-'el_ins_2'=>$el_ins[2],
-'el_ins_3'=>$el_ins[3],
-'el_ins_4'=>$el_ins[4],
-'el_ins_5'=>$el_ins[5],
-'el_ins_6'=>$el_ins[6],
-'el_ins_7'=>$el_ins[7],
-'el_ins_8'=>$el_ins[8],
-'el_ins_9'=>$el_ins[9],
-'el_ins_10'=>$el_ins[10],
-'el_ins_11'=>str_replace('"}]', '' ,$el_ins[11]),
-//Acc code-----------------------------
-'ac_ins_1'=>str_replace('inspection":"', '' ,$ac_ins[1]),
-'ac_ins_2'=>$ac_ins[2],
-'ac_ins_3'=>$ac_ins[3],
-'ac_ins_4'=>$ac_ins[4],
-'ac_ins_5'=>$ac_ins[5],
-'ac_ins_6'=>str_replace('"}]', '' ,$ac_ins[6]),
-//signature code------------------------------
-'inspector_name'=>  $in_name,
-'superintendent' =>$superintendent,
-'in_sign'       =>$in_sign,
-'sup_sign' =>$sup_sign,
-'in_signdate' => $in_signdate,
-'sup_signdate' => $sup_signdate,
-//photo code-----------------------------
-'photo_1'=>$photo_1,
-'photo_2'=>$photo_2,
-'photo_3'=>$photo_3,
-'photo_4'=>$photo_4,
-'photo_5'=>$photo_5,
-'photo_6'=>$photo_6,
-'photo_7'=>$photo_7,
-'photo_8'=>$photo_8,
-'photo_9'=>$photo_9,
-'photo_10'=>$photo_10,
-'photo_11'=>$photo_11,
-'photo_12'=>$photo_12,
-'photo_13'=>$photo_13,
-'photo_14'=>$photo_14,
-'photo_15'=>$photo_15,
-'photo_16'=>$photo_16,
-'photo_17'=>$photo_17,
-'photo_18'=>$photo_18,
-'photo_19'=>$photo_19,
-'photo_20'=>$photo_20,
-'photo_21'=>$photo_21,
-'photo_22'=>$photo_22,
-'photo_23'=>$photo_23,
-'photo_24'=>$photo_24,
-'photo_25'=>$photo_25,
-'photo_26'=>$photo_26,
-'photo_27'=>$photo_27,
-'photo_28'=>$photo_28,
-'photo_29'=>$photo_29,
-'photo_30'=>$photo_30,
-//Deficeincy code------------------------------
-'deficiency_photo_1'=>$deficiency_photo_1,
-'deficiency_photo_2'=>$deficiency_photo_2,
-'deficiency_photo_3'=>$deficiency_photo_3,
-'deficiency_photo_4'=>$deficiency_photo_4,
-'deficiency_photo_5'=>$deficiency_photo_5,
-'deficiency_photo_6'=>$deficiency_photo_6,
-'deficiency_photo_7'=>$deficiency_photo_7,
-'deficiency_photo_8'=>$deficiency_photo_8,
-'deficiency_photo_9'=>$deficiency_photo_9,
-'deficiency_photo_10'=>$deficiency_photo_10,
-'deficiency_photo_11'=>$deficiency_photo_11,
-'deficiency_photo_12'=>$deficiency_photo_12,
-'deficiency_photo_13'=>$deficiency_photo_13,
-
-
-
-    ];
-
-    $path = public_path('pdf_status_100/');
-    $fileName =  $application->applicant_name.time(). '.' . 'pdf' ;
-
-
-  $result = DB::table('dpdfs')->insert([
-        'application_id'     =>   $id,
-               'file'   =>   $fileName,
-               'application_type' => '50%'
-    ]);
-
-    if($result) {
-
-        $pdf = PDF::loadView('status100pdf',$data);
-        $pdf->save($path . '/' . $fileName);
-        //return $pdf->download($fileName);
-        session()->flash('message', 'success');
-
-        return Redirect::back();
-
-    } else {
-        session()->flash('message', 'failed');
-        return  Redirect::back();
-    }
-
-
-
-
-
-
-
-
-
-
-   // return $pdf->download($fileName);
-}
-
-
-
-
-
-
-
-
-public function generatepdf( $id)
-{
-        $application = Application::find($id);
-
-        $flr_id = $application->floor_plan;
-        $floorplan = FloorPlan::find($flr_id);
-
-        $company_id = $application->company_id;
-        $buider_name  = Company::find($company_id);
-
-
-
-
-        foreach (Setting::where('id', 1)->get() as $report)
-        {
-            $report_glo = $report->report_glo;
-            $report_contact = $report->report_contact;
-        }
-
-
-        $gis = Status50::where('application_id', $id)
-        ->get('general_inspection');
-        $result = explode("_", $gis);
-
-
-        $i_ins = Status50::where('application_id', $id)
-        ->get('interior_inspection');
-        $interior_ins = explode("_", $i_ins);
-
-
-        $win_d =Status50::where('application_id', $id)
-        ->get('window_door_inspection');
-
-        $win_doors = explode("_", $win_d);
-
-
-        $ex_ins =  Status50::where('application_id', $id)
-        ->get('exterior_inspection');
-        $exterior_ins = explode("_",$ex_ins);
-
-        $rf_ins =  Status50::where('application_id', $id)
-        ->get('roof_attic_inspection');
-        $roof_ins = explode("_", $rf_ins);
-
-
-        foreach (Status50::where('application_id', $id)
-        ->get() as $status50) {
-            $in_name = $status50->inspector;
-            $superintendent = $status50->superintendent;
-            $in_sign = $status50->inspection_sign;
-            $sup_sign =  $status50->superintendent_sign;
-            $in_signdate = $status50->inspection_sign_off_date;
-            $sup_signdate =  $status50->superintendent_sign_off_date;
-
-        }
-
-    foreach (Photo::where('application_id', $id)->where('type', '50%')
-        ->get() as $photo50) {
-            $photo_1=$photo50->photo_1;
-            $photo_2=$photo50->photo_2;
-            $photo_3=$photo50->photo_3;
-            $photo_4=$photo50->photo_4;
-            $photo_5=$photo50->photo_5;
-            $photo_6=$photo50->photo_6;
-            $photo_7=$photo50->photo_7;
-            $photo_8=$photo50->photo_8;
-            $photo_9=$photo50->photo_9;
-            $photo_10=$photo50->photo_10;
-            $photo_11=$photo50->photo_11;
-            $photo_12=$photo50->photo_12;
-            $photo_13=$photo50->photo_13;
-            $photo_14=$photo50->photo_14;
-            $photo_15=$photo50->photo_15;
-            $photo_16=$photo50->photo_16;
-            $photo_17=$photo50->photo_17;
-            $photo_18=$photo50->photo_18;
-            $photo_19=$photo50->photo_19;
-            $photo_20=$photo50->photo_20;
-            $photo_21=$photo50->photo_21;
-            $photo_22=$photo50->photo_22;
-            $photo_23=$photo50->photo_23;
-            $photo_24=$photo50->photo_24;
-            $photo_25=$photo50->photo_25;
-            $photo_26=$photo50->photo_26;
-            $photo_27=$photo50->photo_27;
-            $photo_28=$photo50->photo_28;
-            $photo_29=$photo50->photo_29;
-            $photo_30=$photo50->photo_30;
-
-
-        }
-      //  dd($photo_20);
-      foreach (Deficiency::where('application_id', $id)->where('type', '50%')
-      ->get() as $deficiency) {
-        $deficiency_photo_1 = $deficiency->deficiency_photo_1;
-        $deficiency_photo_2 = $deficiency->deficiency_photo_2;
-        $deficiency_photo_3 = $deficiency->deficiency_photo_3;
-        $deficiency_photo_4 = $deficiency->deficiency_photo_4;
-        $deficiency_photo_5 = $deficiency->deficiency_photo_5;
-        $deficiency_photo_6 = $deficiency->deficiency_photo_6;
-        $deficiency_photo_7 = $deficiency->deficiency_photo_7;
-        $deficiency_photo_8 = $deficiency->deficiency_photo_8;
-        $deficiency_photo_9 = $deficiency->deficiency_photo_9;
-        $deficiency_photo_10= $deficiency->deficiency_photo_10;
-        $deficiency_photo_11 =$deficiency->deficiency_photo_11;
-        $deficiency_photo_12 =$deficiency->deficiency_photo_12;
-        $deficiency_photo_13=$deficiency->deficiency_photo_13;
-
-      }
-
-
-
-
-
-
-
-        $data = [
-            'applicant_name' => $application->applicant_name ,
-            'applicant_address' => $application->applicant_address,
-            'contractor_name' =>$buider_name->name,
-            'floorplan' => $floorplan->name,
-            'report_glo' => $report_glo,
-            'report_contact' => $report_contact,
-            'result_1'=>str_replace('inspection":"', '' , $result[1]),
-            'result_2'=>$result[2],
-            'result_3'=>$result[3],
-            'result_4'=>$result[4],
-            'result_5'=>$result[5],
-            'result_6'=>$result[6],
-            'result_7'=>$result[7],
-            'result_8'=>$result[8],
-            'result_9'=>$result[9],
-            'result_10'=>$result[10],
-            'result_11'=>$result[11],
-            'result_12'=>$result[12],
-            'result_13'=>$result[13],
-            'result_14'=>$result[14],
-            'result_15'=>$result[15],
-            'result_16'=>$result[16],
-            'result_17'=>$result[17],
-            'result_18'=>$result[18],
-            'result_19'=>$result[19],
-            'result_20'=>$result[20],
-            'result_21'=>  str_replace('"}]', '' , $result[21]),
-            //Interiror code---------------------------------------------------
-            'interior_ins1'=>str_replace('inspection":"', '' , $interior_ins[1]),
-            'interior_ins2'=>$interior_ins[2],
-            'interior_ins3'=>$interior_ins[3],
-            'interior_ins4'=>$interior_ins[4],
-            'interior_ins5'=>$interior_ins[5],
-            'interior_ins6'=>$interior_ins[6],
-            'interior_ins7'=>$interior_ins[7],
-            'interior_ins8'=>$interior_ins[8],
-            'interior_ins9'=>$interior_ins[9],
-            'interior_ins10'=>$interior_ins[10],
-            'interior_ins11'=>$interior_ins[11],
-            'interior_ins12'=>$interior_ins[12],
-            'interior_ins13'=>$interior_ins[13],
-            'interior_ins14'=>$interior_ins[14],
-            'interior_ins15'=> str_replace('"}]', '' ,$interior_ins[15]),
-            //Window_doors code------------------------------------------------
-            'win_doors1' =>str_replace('inspection":"', '' , $win_doors[2]),
-            'win_doors2'=> $win_doors[3],
-            'win_doors3'=> $win_doors[4],
-            'win_doors4'=>  str_replace('"}]', '' ,$win_doors[5]),
-            //ExteriorIns code-----------------------------------------------------------------------------
-            'exterior_ins1'=>str_replace('inspection":"', '' , $exterior_ins[1]),
-            'exterior_ins2'=>$exterior_ins[2],
-            'exterior_ins3'=>$exterior_ins[3],
-            'exterior_ins4'=>$exterior_ins[4],
-            'exterior_ins5'=>$exterior_ins[5],
-            'exterior_ins6'=>$exterior_ins[6],
-            'exterior_ins7'=>$exterior_ins[7],
-            'exterior_ins8'=>$exterior_ins[8],
-            'exterior_ins9'=>$exterior_ins[9],
-            'exterior_ins10'=>$exterior_ins[10],
-            'exterior_ins11'=>$exterior_ins[11],
-            'exterior_ins12'=>str_replace('"}]', '' ,$exterior_ins[12]),
-            //RoofIns code---------------------------------------------------------------------------------
-            'roof_ins1'=> str_replace('inspection":"', '' , $roof_ins[2]),
-            'roof_ins2'=> $roof_ins[3],
-            'roof_ins3'=> $roof_ins[4],
-            'roof_ins4'=> $roof_ins[5],
-            'roof_ins5'=> $roof_ins[6],
-            'roof_ins6'=> $roof_ins[7],
-            'roof_ins7'=> $roof_ins[8],
-            'roof_ins8'=> $roof_ins[9],
-            'roof_ins9'=> $roof_ins[10],
-            'roof_ins10'=> str_replace('"}]', '' ,$roof_ins[11]),
-            //signature code--------------------------------------------------------------------------------
-            'inspector_name'=>  $in_name,
-             'superintendent' =>$superintendent,
-            'in_sign'       =>$in_sign,
-            'sup_sign' =>$sup_sign,
-            'in_signdate' => $in_signdate,
-            'sup_signdate' => $sup_signdate,
-            //Photos code ................................................................................................................................
-            'photo_1'=>$photo_1,
-'photo_2'=>$photo_2,
-'photo_3'=>$photo_3,
-'photo_4'=>$photo_4,
-'photo_5'=>$photo_5,
-'photo_6'=>$photo_6,
-'photo_7'=>$photo_7,
-'photo_8'=>$photo_8,
-'photo_9'=>$photo_9,
-'photo_10'=>$photo_10,
-'photo_11'=>$photo_11,
-'photo_12'=>$photo_12,
-'photo_13'=>$photo_13,
-'photo_14'=>$photo_14,
-'photo_15'=>$photo_15,
-'photo_16'=>$photo_16,
-'photo_17'=>$photo_17,
-'photo_18'=>$photo_18,
-'photo_19'=>$photo_19,
-'photo_20'=>$photo_20,
-'photo_21'=>$photo_21,
-'photo_22'=>$photo_22,
-'photo_23'=>$photo_23,
-'photo_24'=>$photo_24,
-'photo_25'=>$photo_25,
-'photo_26'=>$photo_26,
-'photo_27'=>$photo_27,
-'photo_28'=>$photo_28,
-'photo_29'=>$photo_29,
-'photo_30'=>$photo_30,
-//Deficeincy code------------------------------
-'deficiency_photo_1'=>$deficiency_photo_1,
-'deficiency_photo_2'=>$deficiency_photo_2,
-'deficiency_photo_3'=>$deficiency_photo_3,
-'deficiency_photo_4'=>$deficiency_photo_4,
-'deficiency_photo_5'=>$deficiency_photo_5,
-'deficiency_photo_6'=>$deficiency_photo_6,
-'deficiency_photo_7'=>$deficiency_photo_7,
-'deficiency_photo_8'=>$deficiency_photo_8,
-'deficiency_photo_9'=>$deficiency_photo_9,
-'deficiency_photo_10'=>$deficiency_photo_10,
-'deficiency_photo_11'=>$deficiency_photo_11,
-'deficiency_photo_12'=>$deficiency_photo_12,
-'deficiency_photo_13'=>$deficiency_photo_13,
-        ];
-        $path = public_path('pdf_status_50/');
-        $fileName =  $application->applicant_name.time(). '.' . 'pdf' ;
-
-
-      $result = DB::table('dpdfs')->insert([
-            'application_id'     =>   $id,
-                   'file'   =>   $fileName,
-                   'application_type' => '50%'
-        ]);
-
-        if($result) {
-
-            $pdf = PDF::loadView('status50pdf',$data);
-            $pdf->save($path . '/' . $fileName);
-            //return $pdf->download($fileName);
-            session()->flash('message', 'success');
-
-            return Redirect::back();
-
-        } else {
-            session()->flash('message', 'failed');
-            return  Redirect::back();
-        }
-
-
-
-
-
-
-
-       //$pdf = new LynX39\LaraPdfMerger\PdfManage;
-     //  $pdf = PDFMerger::init();
-
-
-    //    $pdf ->addPDF(public_path($application->document_file_1), 'all');
-    //    $pdf ->addPDF(public_path($application->document_file_2), 'all');
-    //    $pdf ->addPDF(public_path($application->document_file_3), 'all');
-    //    $pdf ->addPDF(public_path($application->document_file_4), 'all');
-    //    $pdf ->addPDF(public_path($application->document_file_5), 'all');
-    //    $pdf ->addPDF(public_path($application->document_file_6), 'all');
-    //    $pdf->merge('file', public_path('/upload/created.pdf'), 'P');
-
-
-
-
-
-
-
-
-           // $application->document_1;
-
-
-
-
-
-
-
-         }
-
-
-
     function __construct() {
         date_default_timezone_set('America/Chicago');
     }
@@ -1253,12 +627,16 @@ public function generatepdf( $id)
         $document_4 = null;
         $document_5 = null;
         $document_6 = null;
+        $document_7 = null;
+        $document_8 = null;
         $document_file_1 = null;
         $document_file_2 = null;
         $document_file_3 = null;
         $document_file_4 = null;
         $document_file_5 = null;
         $document_file_6 = null;
+        $document_file_7 = null;
+        $document_file_8 = null;
 
         if ($request->hasFile('document_files1')) {
             if($request->input('document_names1')) {
@@ -1308,6 +686,22 @@ public function generatepdf( $id)
             }
         }
 
+        if ($request->hasFile('document_files7')) {
+            if($request->input('document_names7')) {
+                $document_7 = $request->input('document_names7');
+                $photoName = $request->document_files7->storeAs('public/uploads', $request->document_files7->getClientOriginalName());
+                $document_file_7 = str_replace('public/uploads/', '', $photoName);
+            }
+        }
+
+        if ($request->hasFile('document_files8')) {
+            if($request->input('document_names8')) {
+                $document_8 = $request->input('document_names6');
+                $photoName = $request->document_files8->storeAs('public/uploads', $request->document_files8->getClientOriginalName());
+                $document_file_8 = str_replace('public/uploads/', '', $photoName);
+            }
+        }
+
         if(Auth::user()->role_id == 1) {
             $company_id = Auth::user()->company_id;
         } else {
@@ -1333,6 +727,10 @@ public function generatepdf( $id)
             'document_file_5' => $document_file_5,
             'document_6' => $document_6,
             'document_file_6' => $document_file_6,
+            'document_7' => $document_7,
+            'document_file_7' => $document_file_7,
+            'document_8' => $document_8,
+            'document_file_8' => $document_file_8,
             'hriq_id' => $request->input('hriq_id'),
             'submitted_glo' => $request->input('submitted_to_glo'),
             'date_glo_submission' => $request->input('date_glo_submission'),
@@ -1455,12 +853,16 @@ public function generatepdf( $id)
             $document_4 = $old_data->document_4;
             $document_5 = $old_data->document_5;
             $document_6 = $old_data->document_6;
+            $document_7 = $old_data->document_7;
+            $document_8 = $old_data->document_8;
             $document_file_1 = $old_data->document_file_1;
             $document_file_2 = $old_data->document_file_2;
             $document_file_3 = $old_data->document_file_3;
             $document_file_4 = $old_data->document_file_4;
             $document_file_5 = $old_data->document_file_5;
             $document_file_6 = $old_data->document_file_6;
+            $document_file_7 = $old_data->document_file_7;
+            $document_file_8 = $old_data->document_file_8;
 
             if($old_data->document_file_1 != null) {
                 $document_1 = $request->input('document_names1');
@@ -1484,6 +886,14 @@ public function generatepdf( $id)
 
             if($old_data->document_file_6 != null) {
                 $document_6 = $request->input('document_names6');
+            }
+
+            if($old_data->document_file_7 != null) {
+                $document_7 = $request->input('document_names7');
+            }
+
+            if($old_data->document_file_8 != null) {
+                $document_8 = $request->input('document_names8');
             }
 
             if ($request->hasFile('document_files1')) {
@@ -1534,6 +944,22 @@ public function generatepdf( $id)
                 }
             }
 
+            if ($request->hasFile('document_files7')) {
+                if($request->input('document_names7')) {
+                    $document_7 = $request->input('document_names7');
+                    $photoName = $request->document_files7->storeAs('public/uploads', $request->document_files7->getClientOriginalName());
+                    $document_file_7 = str_replace('public/uploads/', '', $photoName);
+                }
+            }
+
+            if ($request->hasFile('document_files8')) {
+                if($request->input('document_names8')) {
+                    $document_8 = $request->input('document_names8');
+                    $photoName = $request->document_files8->storeAs('public/uploads', $request->document_files8->getClientOriginalName());
+                    $document_file_8 = str_replace('public/uploads/', '', $photoName);
+                }
+            }
+
             $application = Application::where('id', $id)->update([
                 'document_1' => $document_1,
                 'document_file_1' => $document_file_1,
@@ -1547,6 +973,10 @@ public function generatepdf( $id)
                 'document_file_5' => $document_file_5,
                 'document_6' => $document_6,
                 'document_file_6' => $document_file_6,
+                'document_7' => $document_7,
+                'document_file_7' => $document_file_7,
+                'document_8' => $document_8,
+                'document_file_8' => $document_file_8,
                 'hriq_id' => $request->input('hriq_id'),
                 'submitted_glo' => $request->input('submitted_to_glo'),
                 'date_glo_submission' => $request->input('date_glo_submission'),
@@ -1575,12 +1005,16 @@ public function generatepdf( $id)
             $document_4 = $old_data->document_4;
             $document_5 = $old_data->document_5;
             $document_6 = $old_data->document_6;
+            $document_7 = $old_data->document_8;
+            $document_8 = $old_data->document_8;
             $document_file_1 = $old_data->document_file_1;
             $document_file_2 = $old_data->document_file_2;
             $document_file_3 = $old_data->document_file_3;
             $document_file_4 = $old_data->document_file_4;
             $document_file_5 = $old_data->document_file_5;
             $document_file_6 = $old_data->document_file_6;
+            $document_file_7 = $old_data->document_file_7;
+            $document_file_8 = $old_data->document_file_8;
 
             if($old_data->document_file_1 != null) {
                 $document_1 = $request->input('document_names1');
@@ -1604,6 +1038,14 @@ public function generatepdf( $id)
 
             if($old_data->document_file_6 != null) {
                 $document_6 = $request->input('document_names6');
+            }
+
+            if($old_data->document_file_7 != null) {
+                $document_7 = $request->input('document_names7');
+            }
+
+            if($old_data->document_file_8 != null) {
+                $document_8 = $request->input('document_names8');
             }
 
             if ($request->hasFile('document_files1')) {
@@ -1654,6 +1096,22 @@ public function generatepdf( $id)
                 }
             }
 
+            if ($request->hasFile('document_files7')) {
+                if($request->input('document_names7')) {
+                    $document_7 = $request->input('document_names7');
+                    $photoName = $request->document_files7->storeAs('public/uploads', $request->document_files7->getClientOriginalName());
+                    $document_file_7 = str_replace('public/uploads/', '', $photoName);
+                }
+            }
+
+            if ($request->hasFile('document_files8')) {
+                if($request->input('document_names8')) {
+                    $document_8 = $request->input('document_names8');
+                    $photoName = $request->document_files8->storeAs('public/uploads', $request->document_files8->getClientOriginalName());
+                    $document_file_8 = str_replace('public/uploads/', '', $photoName);
+                }
+            }
+
             Application::where('id', $id)->update([
                 'document_1' => $document_1,
                 'document_file_1' => $document_file_1,
@@ -1666,7 +1124,11 @@ public function generatepdf( $id)
                 'document_5' => $document_5,
                 'document_file_5' => $document_file_5,
                 'document_6' => $document_6,
-                'document_file_6' => $document_file_6
+                'document_file_6' => $document_file_6,
+                'document_7' => $document_7,
+                'document_file_7' => $document_file_7,
+                'document_8' => $document_8,
+                'document_file_8' => $document_file_8
             ]);
 
             if($request->input('inspector_assigned')) {

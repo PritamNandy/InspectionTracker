@@ -23,6 +23,20 @@
             margin-bottom: 5px;
         }
 
+        .autocomplete-items {
+            position: absolute;
+            background: white;
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 10px;
+            right: 15px;
+            left: 15px;
+            z-index: 10000;
+        }
+
+        .autocomplete-items div {
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
         @if(\Illuminate\Support\Facades\Auth::user()->role_id == 1)
             .contractor {
             pointer-events: none !important;
@@ -190,6 +204,48 @@
 
                                         </div>
                                     </div>
+
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <input type="text" name="document_names7" class="form-control" value="{{ $application->document_7 }}" @if(\Illuminate\Support\Facades\Auth::user()->role_id == 3) readonly @endif>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            @if($application->document_file_7)
+                                                <a target="_blank" href="{{ url('public/storage/uploads/'.$application->document_file_7) }}">{{ $application->document_file_7 }}</a>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <input type="file" name="document_files7" class="form-control" @if(\Illuminate\Support\Facades\Auth::user()->role_id == 3) readonly @endif>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <input type="text" name="document_names8" class="form-control" value="{{ $application->document_8 }}" @if(\Illuminate\Support\Facades\Auth::user()->role_id == 3) readonly @endif>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            @if($application->document_file_8)
+                                                <a target="_blank" href="{{ url('public/storage/uploads/'.$application->document_file_8) }}">{{ $application->document_file_8 }}</a>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <input type="file" name="document_files8" class="form-control" @if(\Illuminate\Support\Facades\Auth::user()->role_id == 3) readonly @endif>
+
+                                        </div>
+                                    </div>
                                 </div>
 
                             </div>
@@ -244,7 +300,8 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="company_name"> Street Address</label>
-                                            <input type="text" name="applicant_street_address" class="form-control" value="{{ $application->applicant_address }}" @if(\Illuminate\Support\Facades\Auth::user()->role_id == 3) readonly @endif>
+                                            <div class="autocomplete-container" id="autocomplete-container"></div>
+{{--                                            <input type="text" name="applicant_street_address" class="form-control" value="{{ $application->applicant_address }}" @if(\Illuminate\Support\Facades\Auth::user()->role_id == 3) readonly @endif>--}}
                                         </div>
                                     </div>
 
@@ -3860,18 +3917,8 @@
 
                         <div class="text-center">
                             <button type="submit" class="btn btn-success" style="width: 200px">Submit</button>
-
-
-
                         </div>
                     </form>
-                    <div class="text-center">
-
-                        <button type="submit" class="btn btn-success" style="width: 200px">Submit</button>
-
-
-
-                        </div>
                 </div>
             </div>
         </div>
@@ -3977,6 +4024,133 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/jquery.signature.css') }}">
 
     <script>
+        let check = 0;
+        $(function () {
+            function addressAutocomplete(containerElement, callback, options) {
+                // create container for input element
+                const inputContainerElement = document.createElement("div");
+                inputContainerElement.setAttribute("class", "input-container");
+                containerElement.appendChild(inputContainerElement);
+
+                // create input element
+                const inputElement = document.createElement("input");
+                inputElement.setAttribute("type", "text");
+                inputElement.classList.add("form-control");
+                inputElement.setAttribute("id", "auto-address");
+                inputElement.setAttribute("name", "applicant_street_address");
+                inputElement.setAttribute("placeholder", options.placeholder);
+                if(check == 0) {
+                    inputElement.setAttribute("value", '{{ $application->applicant_address }}')
+                    check++;
+                }
+                inputContainerElement.appendChild(inputElement);
+
+                setTimeout(function addressAutocomplete(containerElement, callback, options) {
+
+                    const MIN_ADDRESS_LENGTH = 3;
+                    const DEBOUNCE_DELAY = 300;
+                    let currentTimeout = 100;
+                    let currentPromiseReject;
+                    let promise;
+                    /* Process a user input: */
+                    let inputElement = document.getElementById('auto-address');
+                    inputElement.addEventListener("input", function(e) {
+                        const currentValue = this.value;
+
+                        // Cancel previous timeout
+                        if (currentTimeout) {
+                            clearTimeout(currentTimeout);
+                        }
+
+                        // Cancel previous request promise
+                        if (currentPromiseReject) {
+                            currentPromiseReject({
+                                canceled: true
+                            });
+                        }
+
+                        // Skip empty or short address strings
+                        if (!currentValue || currentValue.length < MIN_ADDRESS_LENGTH) {
+                            return false;
+                        }
+
+                        /* Call the Address Autocomplete API with a delay */
+                        currentTimeout = setTimeout(() => {
+                            currentTimeout = null;
+
+                            /* Create a new promise and send geocoding request */
+                            const promise = new Promise((resolve, reject) => {
+                                currentPromiseReject = reject;
+
+                                // Get an API Key on https://myprojects.geoapify.com
+                                const apiKey = "90b19e245a5e4ac8a5784e0f2dd7f9c4";
+
+                                var url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(currentValue)}&format=json&limit=5&filter=countrycode:us&apiKey=${apiKey}`;
+
+                                fetch(url)
+                                    .then(response => {
+                                        currentPromiseReject = null;
+
+                                        // check if the call was successful
+                                        if (response.ok) {
+                                            response.json().then(data => resolve(data));
+                                        } else {
+                                            response.json().then(data => reject(data));
+                                        }
+                                    });
+                            });
+
+                            promise.then((data) => {
+                                /*create a DIV element that will contain the items (values):*/
+                                $('.autocomplete-items').remove();
+                                const autocompleteItemsElement = document.createElement("div");
+                                autocompleteItemsElement.setAttribute("class", "autocomplete-items");
+                                inputContainerElement.appendChild(autocompleteItemsElement);
+
+                                /* For each item in the results */
+                                data.results.forEach((result, index) => {
+                                    /* Create a DIV element for each element: */
+                                    const itemElement = document.createElement("div");
+                                    /* Set formatted address as item value */
+                                    itemElement.innerHTML = result.formatted;
+                                    autocompleteItemsElement.appendChild(itemElement);
+                                });
+                                // here we get address suggestions
+
+                                $('.autocomplete-items div').on("click", function() {
+                                    $('#auto-address').val($(this).text())
+                                    $('.autocomplete-items').remove();
+                                    console.log($(this).text())
+                                })
+
+                                console.log(data);
+                            }, (err) => {
+                                if (!err.canceled) {
+                                    console.log(err);
+                                }
+                            });
+                        }, DEBOUNCE_DELAY);
+                    });
+
+                    function closeDropDownList() {
+                        var autocompleteItemsElement = inputContainerElement.querySelector(".autocomplete-items");
+                        if (autocompleteItemsElement) {
+                            inputContainerElement.removeChild(autocompleteItemsElement);
+                        }
+                    }
+                }, 1000)
+            }
+
+            addressAutocomplete(document.getElementById("autocomplete-container"), (data) => {
+                console.log("Selected option: ");
+                console.log(data);
+            }, {
+                placeholder: "Enter an address here"
+            });
+
+
+        })
+
         $('.inspectorSignOff').on("click", function(e) {
             e.preventDefault();
             $('#inspectorSign').modal();

@@ -80,14 +80,14 @@ class FloorPlanController extends Controller
 
         $attachments = [];
         if ($request->hasFile('attachments')) {
-            $allowedExtension = ['svg','jpg','png','gif','jpeg'];
+            $allowedExtension = ['svg','jpg','png','gif','jpeg', 'pdf', 'doc', 'docx'];
             $files = $request->file('attachments');
             foreach ($files as $file) {
                 $filename = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
                 $check = in_array($extension, $allowedExtension);
                 if ($check) {
-                    $photoName =  $file->store('public/uploads/');
+                    $photoName =  $file->storeAs('public/uploads/', $file->getClientOriginalName());
                     //$photoName =  $request->image->store('public/uploads');
                     $photoName = str_replace('public/uploads/', '', $photoName);
                     array_push($attachments, $photoName);
@@ -140,7 +140,7 @@ class FloorPlanController extends Controller
         $attachments = [];
         if ($request->hasFile('attachments')) {
             echo "Hello";
-            $allowedExtension = ['svg','jpg','png','gif','jpeg'];
+            $allowedExtension = ['svg','jpg','png','gif','jpeg', 'pdf', 'doc', 'docx'];
             //
             foreach ($files as $file) {
                 $filename = $file->getClientOriginalName();
@@ -148,7 +148,7 @@ class FloorPlanController extends Controller
                 $check = in_array($extension, $allowedExtension);
                 if ($check) {
                     echo '1';
-                    $photoName =  $file->store('public/uploads/');
+                    $photoName =  $file->storeAs('public/uploads/', $file->getClientOriginalName());
                     //$photoName =  $request->image->store('public/uploads');
                     $photoName = str_replace('public/uploads/', '', $photoName);
                     array_push($attachments, $photoName);

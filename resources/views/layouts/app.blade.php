@@ -83,11 +83,13 @@
             <li><a href="{{ url('admin/email-templates') }}"><i class="fa fa-envelope"></i><span>Email Templates</span></a></li>
             <li><a href="{{ url('admin/settings') }}"><i class="fa fa-cogs"></i><span>Settings</span></a></li>
         @elsecan('inspector')
+            <li><a href="{{ url('/') }}"><i class="fa fa-tachometer"></i><span>Dashboard</span></a></li>
             <li id="is_project"><a href="{{ url('inspector/application') }}"><i class="fa fa-list"></i><span>Applications</span></a></li>
             <li><a href="{{ url('inspector/contractor-staff') }}"><i class="fa fa-users"></i><span>Contractor<br>Staffs</span></a></li>
             <li><a href="{{ url('inspector/floorplan') }}"><i class="fa fa-building"></i><span>Floor Plan</span></a></li>
             <li><a href="{{ url('inspector/document') }}"><i class="fa fa-file"></i><span>Document</span></a></li>
         @elsecan('company')
+            <li><a href="{{ url('/') }}"><i class="fa fa-tachometer"></i><span>Dashboard</span></a></li>
             <li><a href="{{ url('contractor/application') }}"><i class="fa fa-list"></i><span>Application</span></a></li>
             <li><a href="{{ url('contractor/floorplan') }}"><i class="fa fa-building"></i><span>Floor Plan</span></a></li>
             <li><a href="{{ url('contractor/document') }}"><i class="fa fa-file"></i><span>Document</span></a></li>

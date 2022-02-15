@@ -18,8 +18,6 @@ class CreateSettingsTable extends Migration
             $table->string('title');
             $table->string('logo')->nullable();
             $table->string('favicon')->nullable();
-            $table->string('report_glo')->nullable();
-            $table->string('report_contact')->nullable();
             $table->timestamps();
         });
     }

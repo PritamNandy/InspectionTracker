@@ -74,8 +74,6 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('application', [ApplicationController::class, 'index']);
         Route::get('edit-application/{id}', [ApplicationController::class, 'editApplicationView']);
         Route::get('view-application/{id}', [ApplicationController::class, 'viewApplicationView']);
-        Route::get('generatepdf/{id}', [ApplicationController::class, 'generatepdf']);   //PDF For Status50%
-        Route::get('generatepdfs/{id}', [ApplicationController::class, 'generatepdfs']); //PDF For Status100%
 
         Route::get('/floorplan', [FloorPlanController::class, 'index']);
 
@@ -131,6 +129,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::post('update-application', [ApplicationController::class, 'updateApplication']);
     Route::post('uploadSign', [ApplicationController::class, 'uploadSign']);
     Route::post('removeSign', [ApplicationController::class, 'removeSign']);
+    Route::get('view-application/{id}', [ApplicationController::class, 'viewApplicationView']);
 
     Route::post('updateEmailTemplate', [EmailController::class, 'updateEmailTemplate']);
     Route::get('getEmailTemplateById/{id}', [EmailController::class, 'getEmailTemplateById']);
@@ -138,7 +137,6 @@ Route::group(['middleware' => 'auth'], function() {
     Route::post('update-settings', [SettingsController::class, 'updateSettings']);
     Route::get('getAudits', [SettingsController::class, 'getAudits'])->name('getAudits');
     Route::post('updateEmailSettings', [SettingsController::class, 'updateEmailSettings']);
-    Route::post('updateReportSettings', [SettingsController::class, 'updateReportSettings']);
 
     Route::get('callQueue', [SettingsController::class, 'callQueue']);
     Route::get('contractorData/{id}', [HomeController::class, 'contractorData']);
